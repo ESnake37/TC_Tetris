@@ -1,303 +1,658 @@
-0x980100CD  # call init_screen
-0x980100D8  # call draw_title
+0x9801022F  # call init_screen
+0x9801023B  # call draw_title
 0xE0008000  # sc play_color
 0x00999999  # 
-0x9801011B  # call draw_play
+0x9801027E  # call draw_play
 0x0D810003  # mov level easy
-0x9801012D  # call draw_level
-0x98010149  # call set_level_color
-0x9801015D  # call draw_difficulty
+0x98010290  # call draw_level
+0x980102AC  # call set_level_color
+0x980102C0  # call draw_difficulty
 0xDD410001  # in key_code kbd
-0x002B0000  # jge key_code 0 menu_loop
+0x002B0000  # jge key_code 0 menu
 0x90010009  # 
 0x3D6B00FF  # and key_code 0xff
-0x002B0046  # je key_code up level_up
+0x002B0010  # je key_code up level_up
 0x68010014  # 
-0x002B0048  # je key_code down level_down
+0x002B0012  # je key_code down level_down
 0x6801001E  # 
-0x002B0035  # je key_code enter init_game
+0x002B0005  # je key_code enter init_game
 0x68010025  # 
-0x60010009  # jmp menu_loop
+0x60010009  # jmp menu
 0xE0010000  # sc 0x000000
-0x9801015D  # call draw_difficulty
+0x980102C0  # call draw_difficulty
 0x15AD0001  # dec level
-0x002D0000  # jge level 0 not_warp
+0x002D0000  # jge level 0 skip_warp
 0x9001001A  # 
 0x0D810003  # mov level easy
 0x2DAD0004  # mod level 4
-0x98010149  # call set_level_color
-0x9801015D  # call draw_difficulty
-0x60010009  # jmp menu_loop
+0x980102AC  # call set_level_color
+0x980102C0  # call draw_difficulty
+0x60010009  # jmp menu
 0xE0010000  # sc 0x000000
-0x9801015D  # call draw_difficulty
+0x980102C0  # call draw_difficulty
 0x0DAD0001  # inc level
 0x2DAD0004  # mod level 4
-0x98010149  # call set_level_color
-0x9801015D  # call draw_difficulty
-0x60010009  # jmp menu_loop
-0x980101B8  # call gen_block
+0x980102AC  # call set_level_color
+0x980102C0  # call draw_difficulty
+0x60010009  # jmp menu
+0xDC810000  # in seed time
+0x9801031B  # call gen_block
 0xE0008000  # sc 0xffffff
 0x00FFFFFF  # 
-0x9801011B  # call draw_play
-0x980100CD  # call init_screen
-0x980101C1  # call draw_game_border
-0x98010201  # call draw_next_area
+0x9801027E  # call draw_play
+0x9801022F  # call init_screen
+0x98010323  # call draw_game_border
+0x98010363  # call draw_next_area
 0x0F410013  # mov max_row board_height
 0x177B0002  # sub max_row 2
 0x04C00000  # clr score
-0x98010219  # call draw_score_area
+0x9801037B  # call draw_score_area
+0x980103A4  # call draw_highscore_area
 0x1DAC0016  # mul level level
-0x1D2D0258  # mul delay level 600
-0x01400000  # clr i
+0x1DAD02BC  # mul level 700
+0x06400000  # clr addr
 0x0A410013  # mov t board_height
 0x12530001  # dec t
 0x1A53000C  # mul t board_width
-0xB80B0001  # sw [i] 1
-0x114B0001  # dec i
-0x094B000C  # add i board_width
-0xB80B0001  # sw [i] 1
-0x094B0001  # inc i
-0x000A0009  # jl i t store_board_lr
-0x78010036  # 
+0xB8330001  # sw [addr] 1
+0x16730001  # dec addr
+0x0E73000C  # add addr board_width
+0xB8330001  # sw [addr] 1
+0x0E730001  # inc addr
+0x00320009  # jl addr t store_board_lr
+0x78010038  # 
 0x0A53000C  # add t board_width
-0xB80B0001  # sw [i] 1
-0x094B0001  # inc i
-0x000A0009  # jl i t store_board_down
-0x7801003E  # 
+0xB8330001  # sw [addr] 1
+0x0E730001  # inc addr
+0x00320009  # jl addr t store_board_down
+0x78010040  # 
 0x06C00000  # clr end
-0x04000000  # clr block_rotation
+0x03C00000  # clr block_rotation
 0x07000000  # clr hard_drop_flag
-0x98010394  # call check_line_full
+0x980101F5  # call check_line_full
 0xE0008000  # sc score_color
 0x00FFFFFF  # 
-0x98010235  # call draw_score
+0x98010397  # call draw_score
 0x08410041  # mov x next_x
 0x08430024  # add x 36
 0x08810008  # mov y next_y
 0x10850003  # sub y 3
-0xA800000F  # push block_next
-0x9801027F  # call get_block_data
+0xA800000E  # push block_next
+0x9801051D  # call get_block_data
 0xE0010000  # sc 0x000000
-0x98010317  # call draw_block
-0x0B80000F  # mov block_cur block_next
-0x980101B8  # call gen_block
+0x980105B5  # call draw_block
+0x0B40000E  # mov block_cur block_next
+0x9801031B  # call gen_block
 0x08410041  # mov x next_x
 0x08430024  # add x 36
 0x08810008  # mov y next_y
 0x10850003  # sub y 3
-0xA800000F  # push block_next
-0x9801027F  # call get_block_data
-0xA800000F  # push block_next
-0x980102F4  # call set_block_color
-0xE0000012  # sc block_color
-0x98010317  # call draw_block
+0xA800000E  # push block_next
+0x9801051D  # call get_block_data
+0xA800000E  # push block_next
+0x98010592  # call set_block_color
+0xE0000011  # sc block_color
+0x980105B5  # call draw_block
 0x0A410005  # mov t block_size
 0x1A530003  # mul t 3
 0x08530003  # add x t 3
 0x08810003  # mov y 3
-0xA800000E  # push block_cur
-0x9801027F  # call get_block_data
-0xA800000E  # push block_cur
-0x980102F4  # call set_block_color
-0xE0000012  # sc block_color
-0x98010317  # call draw_block
+0xA800000D  # push block_cur
+0x9801051D  # call get_block_data
+0xA800000D  # push block_cur
+0x98010592  # call set_block_color
+0xE0000011  # sc block_color
+0x980105B5  # call draw_block
 0x0AC10004  # mov block_x 4
 0x03000000  # clr block_y
+0x15AD000A  # sub level 10
 0x00370001  # je end 1 main_loop
-0x68010042  # 
+0x68010044  # 
 0x00390001  # je hard_drop_flag 1 fall_wait
-0x6801006E  # 
-0x1D2D01F4  # mul delay level 500
+0x68010071  # 
+0x0D000016  # mov delay level
 0xDD410001  # in key_code kbd
 0x002B0000  # jl key_code 0 handle_key
-0x78010076  # 
+0x78010079  # 
 0x15290001  # dec delay
 0x00290000  # jg delay 0 fall_wait
-0x8801006E  # 
-0x9801033C  # call move_down
-0x60010069  # jmp main_loop_start
+0x88010071  # 
+0x9801019B  # call move_down
+0x6001006C  # jmp main_loop_start
 0x3D6B00FF  # and key_code 0xff
-0x002B0045  # je key_code left move_left
-0x68010082  # 
-0x002B0047  # je key_code right move_right
-0x68010099  # 
-0x002B0046  # je key_code up rotate
-0x680100B0  # 
-0x002B0048  # je key_code down soft_drop
-0x680100C8  # 
-0x002B0044  # je key_code space hard_drop
-0x680100CA  # 
-0x6001006E  # jmp fall_wait
+0x002B000F  # je key_code left move_left
+0x68010085  # 
+0x002B0011  # je key_code right move_right
+0x6801009C  # 
+0x002B0010  # je key_code up rotate
+0x680100B3  # 
+0x002B0012  # je key_code down soft_drop
+0x680100CB  # 
+0x002B0020  # je key_code space hard_drop
+0x680100CD  # 
+0x60010071  # jmp fall_wait
 0x15D70001  # sub block_x_new block_x 1
 0x0E00000C  # mov block_y_new block_y
-0x98010378  # call check_collision
+0x980101D9  # call check_collision
 0x00350001  # je collision 1 fall_wait
-0x6801006E  # 
+0x68010071  # 
 0x0A410005  # mov t block_size
 0x1852000B  # mul x t block_x
 0x1892000C  # mul y t block_y
 0x10430002  # sub x 2
 0x08850003  # add y 3
 0xE0010000  # sc 0x000000
-0x98010317  # call draw_block
+0x980105B5  # call draw_block
 0x12D70001  # dec block_x
 0x0A410005  # mov t block_size
 0x1852000B  # mul x t block_x
 0x1892000C  # mul y t block_y
 0x10430002  # sub x 2
 0x08850003  # add y 3
-0xA800000E  # push block_cur
-0x980102F4  # call set_block_color
-0xE0000012  # sc block_color
-0x98010317  # call draw_block
-0x6001006E  # jmp fall_wait
+0xA800000D  # push block_cur
+0x98010592  # call set_block_color
+0xE0000011  # sc block_color
+0x980105B5  # call draw_block
+0x60010071  # jmp fall_wait
 0x0DD70001  # add block_x_new block_x 1
 0x0E00000C  # mov block_y_new block_y
-0x98010378  # call check_collision
+0x980101D9  # call check_collision
 0x00350001  # je collision 1 fall_wait
-0x6801006E  # 
+0x68010071  # 
 0x0A410005  # mov t block_size
 0x1852000B  # mul x t block_x
 0x1892000C  # mul y t block_y
 0x10430002  # sub x 2
 0x08850003  # add y 3
 0xE0010000  # sc 0x000000
-0x98010317  # call draw_block
+0x980105B5  # call draw_block
 0x0AD70001  # inc block_x
 0x0A410005  # mov t block_size
 0x1852000B  # mul x t block_x
 0x1892000C  # mul y t block_y
 0x10430002  # sub x 2
 0x08850003  # add y 3
-0xA800000E  # push block_cur
-0x980102F4  # call set_block_color
-0xE0000012  # sc block_color
-0x98010317  # call draw_block
-0x6001006E  # jmp fall_wait
+0xA800000D  # push block_cur
+0x98010592  # call set_block_color
+0xE0000011  # sc block_color
+0x980105B5  # call draw_block
+0x60010071  # jmp fall_wait
 0x0A410005  # mov t block_size
 0x1852000B  # mul x t block_x
 0x1892000C  # mul y t block_y
 0x10430002  # sub x 2
 0x08850003  # add y 3
 0xE0010000  # sc 0x000000
-0x98010317  # call draw_block
-0x0C210001  # inc block_rotation
-0x2C210004  # mod block_rotation 4
+0x980105B5  # call draw_block
+0x0BDF0001  # inc block_rotation
+0x2BDF0004  # mod block_rotation 4
 0x0A410005  # mov t block_size
 0x1852000B  # mul x t block_x
 0x1892000C  # mul y t block_y
 0x10430002  # sub x 2
 0x08850003  # add y 3
-0xA800000E  # push block_cur
-0x9801027F  # call get_block_data
-0x98010378  # call check_collision
+0xA800000D  # push block_cur
+0x9801051D  # call get_block_data
+0x980101D9  # call check_collision
 0x00350001  # je collision 1 fall_wait
-0x6801006E  # 
-0xA800000E  # push block_cur
-0x980102F4  # call set_block_color
-0xE0000012  # sc block_color
-0x98010317  # call draw_block
-0x6001006E  # jmp fall_wait
-0x9801033C  # call move_down
-0x6001006E  # jmp fall_wait
+0x68010071  # 
+0xA800000D  # push block_cur
+0x98010592  # call set_block_color
+0xE0000011  # sc block_color
+0x980105B5  # call draw_block
+0x60010071  # jmp fall_wait
+0x9801019B  # call move_down
+0x60010071  # jmp fall_wait
 0x0F010001  # mov hard_drop_flag 1
 0x05000000  # clr delay
-0x60010069  # jmp main_loop_start
-0xE0010000  # sc screen_color
-0x00800000  # clr y
+0x6001006C  # jmp main_loop_start
+0xE0008000  # sc gameover_color
+0x00FFFFFF  # 
+0x980100F8  # call check_rank
+0x9801022F  # call init_screen
+0xE0008000  # sc gameover_color
+0x00FFFFFF  # 
+0x08410026  # mov x gameover_x
+0x0881002C  # mov y gameover_y
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801083C  # call char_G
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010753  # call char_A
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010901  # call char_M
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107F4  # call char_E
+0x0843000C  # add x 12
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010955  # call char_O
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A56  # call char_V
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107F4  # call char_E
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980109C7  # call char_R
+0xF8000000  # halt
+0x06400000  # clr addr
+0x0A810006  # mov t2 name_len
+0x0A950001  # inc t2
+0x1A950003  # mul t2 3
+0x12950001  # dec t2
+0xD2410000  # ld t [0]
+0xB8320009  # sw [addr] t
+0x0E730001  # inc addr
+0xD2410001  # ld t [1]
+0xB8320009  # sw [addr] t
+0x0032000A  # jl addr t2 rank_load
+0x780100FF  # 
+0x1280000A  # neg t2
+0xD240000A  # ld t [t2]
+0x06400000  # clr addr
+0xC2720000  # lw t [addr]
+0x00260009  # jg score t rank1
+0x88010115  # 
+0x0E730006  # add addr name_len
+0x0E730001  # inc addr
+0xC2720000  # lw t [addr]
+0x00260009  # jg score t rank2
+0x88010121  # 
+0x0E730006  # add addr name_len
+0x0E730001  # inc addr
+0xC2720000  # lw t [addr]
+0x00260009  # jg score t rank3
+0x88010129  # 
+0x6001012B  # jmp check_rank_ret
+0x0A410006  # mov t name_len
+0x0A530001  # inc t
+0x0E720009  # add addr t
+0x01400000  # clr i
+0x9801012C  # call rank_shift
+0x06400000  # clr addr
+0x01400000  # clr i
+0x9801012C  # call rank_shift
+0x06400000  # clr addr
+0xB8320013  # sw [addr] score
+0x98010135  # call newbest
+0x6001012B  # jmp check_rank_ret
+0x0A410006  # mov t name_len
+0x0A530001  # inc t
+0x01400000  # clr i
+0x9801012C  # call rank_shift
+0x16720009  # sub addr t
+0xB8320013  # sw [addr] score
+0x98010135  # call newbest
+0x6001012B  # jmp check_rank_ret
+0xB8320013  # sw [addr] score
+0x98010135  # call newbest
+0xA0000000  # ret
+0xC2B20000  # lw t2 [addr]
+0x0E720009  # add addr t
+0xB832000A  # sw [addr] t2
+0x0E730001  # inc addr
+0x16720009  # sub addr t
+0x094B0001  # inc i
+0x000A0009  # jl i t rank_shift
+0x7801012C  # 
+0xA0000000  # ret
+0x9801022F  # call init_screen
+0xE0008000  # sc gameover_color
+0x00FFFFFF  # 
+0x08410026  # mov x gameover_x
+0x0881002C  # mov y gameover_y
+0x10850010  # sub y 16
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801092C  # call char_N
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107F4  # call char_E
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A76  # call char_W
+0x0843000C  # add x 12
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801077B  # call char_B
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107F4  # call char_E
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980109F3  # call char_S
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A1B  # call char_T
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010AFE  # call char_exclamation_mark
+0x08410026  # mov x gameover_x
+0x10430006  # sub x 6
+0x08850014  # add y 20
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801092C  # call char_N
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010753  # call char_A
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010901  # call char_M
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107F4  # call char_E
+0x08430006  # add x 6
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010B0D  # call char_colon
+0x01400000  # clr i
+0xDD410001  # in key_code kbd
+0x002B0000  # jl key_code 0 input_char
+0x78010175  # 
+0x60010171  # jmp input_name
+0x3D6B00FF  # and key_code 0xff
+0x002B0005  # je key_code enter rank_save
+0x6801018E  # 
+0x002B0004  # je key_code backspace delete_char
+0x68010184  # 
+0x000B0006  # jge i name_len input_name
+0x90010171  # 
+0x08430006  # add x 6
+0xE0008000  # sc gameover_color
+0x00FFFFFF  # 
+0x98010443  # call draw_char
+0x094B0001  # inc i
+0x0E730001  # inc addr
+0xB8320015  # sw [addr] key_code
+0x60010171  # jmp input_name
+0x000B0000  # jle i 0 input_name
+0x80010171  # 
+0xC5720000  # lw key_code [addr]
+0xB8330000  # sw [addr] 0
+0xE0010000  # sc 0x000000
+0x98010443  # call draw_char
+0x114B0001  # dec i
+0x16730001  # dec addr
+0x10430006  # sub x 6
+0x60010171  # jmp input_name
+0x06400000  # clr addr
+0x0A410006  # mov t name_len
+0x0A530001  # inc t
+0x1A530003  # mul t 3
+0xC2B20000  # lw t2 [addr]
+0xC8150000  # sd [0] t2
+0x0E730001  # inc addr
+0xC2B20000  # lw t2 [addr]
+0xC8150001  # sd [1] t2
+0x0E730001  # inc addr
+0x00320009  # jl addr t rank_save_loop
+0x78010195  # 
+0xA0000000  # ret
+0x0DC0000B  # mov block_x_new block_x
+0x0E190001  # add block_y_new block_y 1
+0x980101D9  # call check_collision
+0x00350000  # je collision 0 move_down_cont
+0x680101C7  # 
+0x0EC10001  # mov end 1
+0x01400000  # clr i
+0x0A800010  # mov t2 block_data
+0x1E59000C  # mul addr block_y board_width
+0x0E72000B  # add addr block_x
+0x0980000C  # mov j block_y
+0x3A548000  # and t t2 0b1111111100000000
+0x0000FF00  # 
+0x00130000  # jne t 0 max_row1
+0x700101AB  # 
+0x098D0001  # inc j
+0x3A548000  # and t t2 0b1111000000000000
+0x0000F000  # 
+0x00130000  # jne t 0 max_row2
+0x700101B0  # 
+0x098D0001  # inc j
+0x000C001D  # jge j max_row store_block
+0x900101B5  # 
+0x0F400006  # mov max_row j
+0x003B0000  # je max_row 0 gameover
+0x680100D0  # 
+0x3A548000  # and t t2 0b1000000000000000
+0x00008000  # 
+0x00150000  # je t2 0 move_down_ret
+0x680101D8  # 
+0x52950001  # shl t2 1
+0x3A948000  # and t2 0b1111111111111111
+0x0000FFFF  # 
+0x00130000  # je t 0 skip_store_block
+0x680101BF  # 
+0xB8320011  # sw [addr] block_color
+0x0E730001  # inc addr
+0x094B0001  # inc i
+0x000B0004  # jl i 4 store_block
+0x780101B5  # 
+0x0E73000C  # add addr board_width
+0x16730004  # sub addr 4
+0x01400000  # clr i
+0x600101B5  # jmp store_block
+0x0A410005  # mov t block_size
+0x1852000B  # mul x t block_x
+0x1892000C  # mul y t block_y
+0x10430002  # sub x 2
+0x08850003  # add y 3
+0xE0010000  # sc 0x000000
+0x980105B5  # call draw_block
+0x0B190001  # inc block_y
+0x0A410005  # mov t block_size
+0x1852000B  # mul x t block_x
+0x1892000C  # mul y t block_y
+0x10430002  # sub x 2
+0x08850003  # add y 3
+0xA800000D  # push block_cur
+0x98010592  # call set_block_color
+0xE0000011  # sc block_color
+0x980105B5  # call draw_block
+0xA0000000  # ret
+0x01400000  # clr i
+0x06800000  # clr collision
+0x0A800010  # mov t2 block_data
+0x1E71000C  # mul addr block_y_new board_width
+0x0E720017  # add addr block_x_new
+0x16730001  # dec addr
+0x0E730001  # inc addr
+0x094B0001  # inc i
+0x3A548000  # and t t2 0b1000000000000000
+0x00008000  # 
+0x00150000  # je t2 0 check_collision_ret
+0x680101F4  # 
+0x52950001  # shl t2 1
+0x3A948000  # and t2 0b1111111111111111
+0x0000FFFF  # 
+0x00130000  # je t 0 skip_check
+0x680101ED  # 
+0xC2720000  # lw t [addr]
+0x00130000  # jne t 0 is_collision
+0x700101F3  # 
+0x000B0004  # jl i 4 check_collision_loop
+0x780101DF  # 
+0x0E73000C  # add addr board_width
+0x16730004  # sub addr 4
+0x01400000  # clr i
+0x600101DF  # jmp check_collision_loop
+0x0E810001  # mov collision 1
+0xA0000000  # ret
+0x0940001D  # mov i max_row
+0x09810002  # mov j 2
+0x1E7B000C  # mul addr max_row board_width
+0x0E730001  # inc addr
+0xC2720000  # lw t [addr]
+0x00130000  # je t 0 check_next_line
+0x68010200  # 
+0x098D0001  # inc j
+0x000D000C  # jge j board_width clear_line
+0x90010207  # 
+0x600101F8  # jmp check_line_loop
+0x094B0001  # inc i
+0x01800000  # clr j
+0x0A800005  # mov t2 i
+0x1E4B000C  # mul addr i board_width
+0x000B0013  # jl i board_height check_line_loop
+0x780101F8  # 
+0x60010210  # jmp check_line_full_ret
+0x12950001  # dec t2
+0x1E55000C  # mul addr t2 board_width
+0x98010211  # call draw_line
+0x0014001D  # jge t2 max_row clear_line
+0x90010207  # 
+0xE0010000  # sc 0x000000
+0x98010397  # call draw_score
+0x0CE70001  # inc score
+0x60010200  # jmp check_next_line
+0xA0000000  # ret
+0x08410003  # mov x 3
+0x0A550001  # add t t2 1
+0x18930005  # mul y t block_size
+0x08850003  # add y 3
+0x09810002  # mov j 2
+0x0E730001  # inc addr
+0xC4720000  # lw block_color [addr]
+0x0A73000C  # add t addr board_width
+0xB8120011  # sw [t] block_color
+0xE0000011  # sc block_color
+0x08C00001  # mov x0 x
+0x09000002  # mov y0 y
+0x01C00000  # clr i0
+0x02000000  # clr j0
+0xE8060004  # draw x0 y0
+0x08C70001  # inc x0
+0x09CF0001  # inc i0
+0x000F0005  # jl i0 block_size draw_line_loop0
+0x7801021F  # 
+0x10C70005  # sub x0 block_size
+0x09090001  # inc y0
+0x01C00000  # clr i0
+0x0A110001  # inc j0
+0x00110005  # jl j0 block_size draw_line_loop0
+0x7801021F  # 
+0x08430005  # add x block_size
+0x098D0001  # inc j
+0x000D000C  # jl j board_width draw_line_loop
+0x78010216  # 
+0xA0000000  # ret
 0x00400000  # clr x
+0x00800000  # clr y
+0xE0010000  # sc screen_color
 0xE8020002  # draw x y
 0x08430001  # inc x
-0x00030080  # jl x screen_width x_loop
-0x780100D0  # 
+0x00030080  # jl x screen_width init_screen_loop
+0x78010232  # 
+0x00400000  # clr x
 0x08850001  # inc y
-0x00050060  # jl y screen_height y_loop
-0x780100CF  # 
+0x00050060  # jl y screen_height init_screen_loop
+0x78010232  # 
 0xA0000000  # ret
 0x0841002E  # mov x title_x
 0x08810018  # mov y title_y
 0x0D0107D0  # mov delay draw_title_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait1
-0x880100DB  # 
+0x8801023E  # 
 0xA8000001  # push x
 0xA8000002  # push y
 0xE0008000  # sc Z_color
 0x00CD0000  # 
-0x98010780  # call char_T
+0x98010A1B  # call char_T
 0x0D0107D0  # mov delay draw_title_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait2
-0x880100E4  # 
+0x88010247  # 
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
 0xE0008000  # sc L_color
 0x00CD6600  # 
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0x0D0107D0  # mov delay draw_title_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait3
-0x880100EE  # 
+0x88010251  # 
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
 0xE0008000  # sc O_color
 0x00CDCD00  # 
-0x98010780  # call char_T
+0x98010A1B  # call char_T
 0x0D0107D0  # mov delay draw_title_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait4
-0x880100F8  # 
+0x8801025B  # 
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
 0xE0008000  # sc S_color
 0x0000CD00  # 
-0x9801072C  # call char_R
+0x980109C7  # call char_R
 0x0D0107D0  # mov delay draw_title_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait5
-0x88010102  # 
+0x88010265  # 
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
 0xE0008000  # sc I_color
 0x0000CDCD  # 
-0x9801065C  # call char_I
+0x9801088B  # call char_I
 0x0D0107D0  # mov delay draw_title_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait6
-0x8801010C  # 
+0x8801026F  # 
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
 0xE0008000  # sc T_color
 0x009A00CD  # 
-0x98010758  # call char_S
+0x980109F3  # call char_S
 0x0D0107D0  # mov delay draw_title_delay
 0x1D290002  # mul delay 2
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_title_wait7
-0x88010117  # 
+0x8801027A  # 
 0xA0000000  # ret
 0x08410034  # mov x play_x
 0x08810032  # mov y play_y
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010709  # call char_P
+0x9801097B  # call char_P
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010677  # call char_L
+0x980108E9  # call char_L
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010544  # call char_A
+0x98010753  # call char_A
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980107DC  # call char_Y
+0x98010ABF  # call char_Y
 0xA0000000  # ret
 0x0841001F  # mov x level_x
 0x08810042  # mov y level_y
@@ -305,45 +660,45 @@
 0x00999999  # 
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010677  # call char_L
+0x980108E9  # call char_L
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010799  # call char_V
+0x98010A56  # call char_V
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010677  # call char_L
+0x980108E9  # call char_L
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980107F7  # call colon
+0x98010B0D  # call char_colon
 0xA0000000  # ret
 0x002D0003  # je level easy set_easy_color
-0x68010151  # 
+0x680102B4  # 
 0x002D0002  # je level normal set_normal_color
-0x68010154  # 
+0x680102B7  # 
 0x002D0001  # je level hard set_hard_color
-0x68010157  # 
+0x680102BA  # 
 0x002D0000  # je level insane set_insane_color
-0x6801015A  # 
+0x680102BD  # 
 0xE0008000  # sc easy_color
 0x0000D4FF  # 
-0x6001015C  # jmp set_level_color_ret
+0x600102BF  # jmp set_level_color_ret
 0xE0008000  # sc normal_color
 0x0000FF41  # 
-0x6001015C  # jmp set_level_color_ret
+0x600102BF  # jmp set_level_color_ret
 0xE0008000  # sc hard_color
 0x00FFF300  # 
-0x6001015C  # jmp set_level_color_ret
+0x600102BF  # jmp set_level_color_ret
 0xE0008000  # sc insane_color
 0x00FF78D8  # 
 0xA0000000  # ret
@@ -351,101 +706,100 @@
 0x08430024  # add x 36
 0x08810042  # mov y level_y
 0x002D0003  # je level easy draw_easy
-0x68010168  # 
+0x680102CB  # 
 0x002D0002  # je level normal draw_normal
-0x68010178  # 
+0x680102DB  # 
 0x002D0001  # je level hard draw_hard
-0x68010190  # 
+0x680102F3  # 
 0x002D0000  # je level insane draw_insane
-0x680101A0  # 
+0x68010303  # 
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010544  # call char_A
+0x98010753  # call char_A
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010758  # call char_S
+0x980109F3  # call char_S
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980107DC  # call char_Y
-0x600101B7  # jmp draw_difficulty_ret
+0x98010ABF  # call char_Y
+0x6001031A  # jmp draw_difficulty_ret
 0xA8000001  # push x
 0xA8000002  # push y
-0x980106BA  # call char_N
+0x9801092C  # call char_N
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980106E3  # call char_O
+0x98010955  # call char_O
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801072C  # call char_R
+0x980109C7  # call char_R
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801068F  # call char_M
+0x98010901  # call char_M
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010544  # call char_A
+0x98010753  # call char_A
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010677  # call char_L
-0x600101B7  # jmp draw_difficulty_ret
+0x980108E9  # call char_L
+0x6001031A  # jmp draw_difficulty_ret
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010637  # call char_H
+0x98010866  # call char_H
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010544  # call char_A
+0x98010753  # call char_A
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801072C  # call char_R
+0x980109C7  # call char_R
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105BD  # call char_D
-0x600101B7  # jmp draw_difficulty_ret
+0x980107CC  # call char_D
+0x6001031A  # jmp draw_difficulty_ret
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801065C  # call char_I
+0x9801088B  # call char_I
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980106BA  # call char_N
+0x9801092C  # call char_N
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010758  # call char_S
+0x980109F3  # call char_S
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010544  # call char_A
+0x98010753  # call char_A
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980106BA  # call char_N
+0x9801092C  # call char_N
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0xA0000000  # ret
-0xDA410000  # in t time
-0x1A528000  # mul t 1103515245
+0x1CA48000  # mul seed 1103515245
 0x41C64E6D  # 
-0x0A533039  # add t 12345
-0x2A528000  # mod t 2147483648
+0x0CA53039  # add seed 12345
+0x2CA48000  # mod seed 2147483648
 0x80000000  # 
-0x5BD30010  # shr block_next t 16
-0x2BDF0007  # mod block_next 7
+0x5BA50010  # shr block_next seed 16
+0x2B9D0007  # mod block_next 7
 0xA0000000  # ret
 0x00400000  # clr x
 0x00800000  # clr y
@@ -461,9 +815,9 @@
 0x0D010028  # mov delay draw_board_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_board_wait1
-0x880101CD  # 
+0x8801032F  # 
 0x00050060  # jl y screen_height draw_game_border_loop1
-0x780101C5  # 
+0x78010327  # 
 0x08430003  # add x 3
 0x10850001  # dec y
 0x0A410005  # mov t block_size
@@ -479,9 +833,9 @@
 0x0D010028  # mov delay draw_board_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_board_wait2
-0x880101DF  # 
+0x88010341  # 
 0x00020009  # jl x t draw_game_border_loop2
-0x780101D7  # 
+0x78010339  # 
 0xE8020002  # draw x y
 0x08430001  # inc x
 0xE8020002  # draw x y
@@ -492,9 +846,9 @@
 0x0D010028  # mov delay draw_board_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_board_wait3
-0x880101EC  # 
+0x8801034E  # 
 0x00050000  # jge y 0 draw_game_border_loop3
-0x900101E4  # 
+0x90010346  # 
 0x10430001  # dec x
 0x08850001  # inc y
 0xE8020002  # draw x y
@@ -507,9 +861,9 @@
 0x0D010028  # mov delay draw_board_delay
 0x15290001  # dec delay
 0x00290000  # jg delay 0 draw_board_wait4
-0x880101FB  # 
+0x8801035D  # 
 0x00030003  # jge x 3 draw_game_border_loop4
-0x900101F3  # 
+0x90010355  # 
 0xA0000000  # ret
 0x08410041  # mov x next_x
 0x08810008  # mov y next_y
@@ -517,23 +871,23 @@
 0x00FFFFFF  # 
 0xA8000001  # push x
 0xA8000002  # push y
-0x980106BA  # call char_N
+0x9801092C  # call char_N
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980107B9  # call char_X
+0x98010A9C  # call char_X
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010780  # call char_T
+0x98010A1B  # call char_T
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980107F7  # call colon
+0x98010B0D  # call char_colon
 0xA0000000  # ret
 0x08410041  # mov x score_x
 0x08810014  # mov y score_y
@@ -541,282 +895,598 @@
 0x00FFFFFF  # 
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010758  # call char_S
+0x980109F3  # call char_S
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801059B  # call char_C
+0x980107AA  # call char_C
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980106E3  # call char_O
+0x98010955  # call char_O
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801072C  # call char_R
+0x980109C7  # call char_R
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980105E5  # call char_E
+0x980107F4  # call char_E
 0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980107F7  # call colon
+0x98010B0D  # call char_colon
 0xA0000000  # ret
 0x08410041  # mov x score_x
 0x08430024  # add x 36
 0x08810014  # mov y score_y
 0x22670064  # div t score 100
-0x98010242  # call draw_num
+0x98010405  # call draw_num
 0x08430006  # add x 6
 0x2A670064  # mod t score 100
 0x2253000A  # div t 10
-0x98010242  # call draw_num
+0x98010405  # call draw_num
 0x08430006  # add x 6
 0x2A67000A  # mod t score 10
-0x98010242  # call draw_num
+0x98010405  # call draw_num
 0xA0000000  # ret
-0x00130000  # je t 0 draw_0
-0x68010256  # 
-0x00130001  # je t 1 draw_1
-0x6801025A  # 
-0x00130002  # je t 2 draw_2
-0x6801025E  # 
-0x00130003  # je t 3 draw_3
-0x68010262  # 
-0x00130004  # je t 4 draw_4
-0x68010266  # 
-0x00130005  # je t 5 draw_5
-0x6801026A  # 
-0x00130006  # je t 6 draw_6
-0x6801026E  # 
-0x00130007  # je t 7 draw_7
-0x68010272  # 
-0x00130008  # je t 8 draw_8
-0x68010276  # 
-0x00130009  # je t 9 draw_9
-0x6801027A  # 
+0x08410041  # mov x highscore_x
+0x08810028  # mov y highscore_y
+0xE0008000  # sc highscore_color
+0x00FFFFFF  # 
 0xA8000001  # push x
 0xA8000002  # push y
-0x980103CB  # call num0
-0x6001027E  # jmp draw_num_ret
+0x98010866  # call char_H
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980103FA  # call num1
-0x6001027E  # jmp draw_num_ret
+0x9801088B  # call char_I
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010413  # call num2
-0x6001027E  # jmp draw_num_ret
+0x9801083C  # call char_G
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010438  # call num3
-0x6001027E  # jmp draw_num_ret
+0x98010866  # call char_H
+0x08430009  # add x 9
 0xA8000001  # push x
 0xA8000002  # push y
-0x9801045D  # call num4
-0x6001027E  # jmp draw_num_ret
+0x980109F3  # call char_S
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010482  # call num5
-0x6001027E  # jmp draw_num_ret
+0x980107AA  # call char_C
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980104AA  # call num6
-0x6001027E  # jmp draw_num_ret
+0x98010955  # call char_O
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980104D5  # call num7
-0x6001027E  # jmp draw_num_ret
+0x980109C7  # call char_R
+0x08430006  # add x 6
 0xA8000001  # push x
 0xA8000002  # push y
-0x980104EF  # call num8
-0x6001027E  # jmp draw_num_ret
+0x980107F4  # call char_E
+0xD1410000  # ld i [0]
+0x01C00000  # clr i0
+0x000B0000  # je i 0 draw_highscore_area_ret
+0x680103EF  # 
+0x08410041  # mov x highscore_x
+0x10430005  # sub x 5
+0x0885000C  # add y 12
 0xA8000001  # push x
 0xA8000002  # push y
-0x98010519  # call num9
-0x6001027E  # jmp draw_num_ret
+0x98010609  # call char_1
+0x08430009  # add x 9
+0x980103F2  # call draw_highscore
+0xD1410001  # ld i [1]
+0x09CF0001  # inc i0
+0x000B0000  # je i 0 draw_highscore_area_ret
+0x680103EF  # 
+0x08410041  # mov x highscore_x
+0x10430005  # sub x 5
+0x0885000C  # add y 12
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010622  # call char_2
+0x08430009  # add x 9
+0x980103F2  # call draw_highscore
+0xD1410001  # ld i [1]
+0x09CF0001  # inc i0
+0x000B0000  # je i 0 draw_highscore_area_ret
+0x680103EF  # 
+0x08410041  # mov x highscore_x
+0x10430005  # sub x 5
+0x0885000C  # add y 12
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010647  # call char_3
+0x08430009  # add x 9
+0x980103F2  # call draw_highscore
+0x11C00007  # neg i0
+0xD2400007  # ld t [i0]
 0xA0000000  # ret
-0xB3400000  # pop block_type
-0x001B0000  # je block_type I get_I_data
-0x6801028E  # 
-0x001B0001  # je block_type O get_O_data
-0x6801029E  # 
-0x001B0002  # je block_type T get_T_data
-0x680102A0  # 
-0x001B0003  # je block_type S get_S_data
-0x680102B0  # 
-0x001B0004  # je block_type Z get_Z_data
-0x680102C1  # 
-0x001B0005  # je block_type J get_J_data
-0x680102D2  # 
-0x001B0006  # je block_type L get_L_data
-0x680102E3  # 
-0x00210000  # je block_rotation 0 get_I0_data
-0x68010296  # 
-0x00210001  # je block_rotation 1 get_I1_data
-0x68010298  # 
-0x00210002  # je block_rotation 2 get_I2_data
-0x6801029A  # 
-0x00210003  # je block_rotation 3 get_I3_data
-0x6801029C  # 
-0x0C410F00  # mov block_data 0b0000111100000000
-0x600102F3  # jmp get_block_data_ret
-0x0C412222  # mov block_data 0b0010001000100010
-0x600102F3  # jmp get_block_data_ret
-0x0C4100F0  # mov block_data 0b0000000011110000
-0x600102F3  # jmp get_block_data_ret
-0x0C414444  # mov block_data 0b0100010001000100
-0x600102F3  # jmp get_block_data_ret
-0x0C416600  # mov block_data 0b0110011000000000
-0x600102F3  # jmp get_block_data_ret
-0x00210000  # je block_rotation 0 get_T0_data
-0x680102A8  # 
-0x00210001  # je block_rotation 1 get_T1_data
-0x680102AA  # 
-0x00210002  # je block_rotation 2 get_T2_data
-0x680102AC  # 
-0x00210003  # je block_rotation 3 get_T3_data
-0x680102AE  # 
-0x0C414E00  # mov block_data 0b0100111000000000
-0x600102F3  # jmp get_block_data_ret
-0x0C414640  # mov block_data 0b0100011001000000
-0x600102F3  # jmp get_block_data_ret
-0x0C410E40  # mov block_data 0b0000111001000000
-0x600102F3  # jmp get_block_data_ret
-0x0C414C40  # mov block_data 0b0100110001000000
-0x600102F3  # jmp get_block_data_ret
-0x00210000  # je block_rotation 0 get_S0_data
-0x680102B8  # 
-0x00210001  # je block_rotation 1 get_S1_data
-0x680102BA  # 
-0x00210002  # je block_rotation 2 get_S2_data
-0x680102BC  # 
-0x00210003  # je block_rotation 3 get_S3_data
-0x680102BE  # 
-0x0C416C00  # mov block_data 0b0110110000000000
-0x600102F3  # jmp get_block_data_ret
-0x0C414620  # mov block_data 0b0100011000100000
-0x600102F3  # jmp get_block_data_ret
-0x0C4106C0  # mov block_data 0b0000011011000000
-0x600102F3  # jmp get_block_data_ret
-0x0C408000  # mov block_data 0b1000110001000000
+0x01800000  # clr j
+0xD5410001  # ld key_code [1]
+0x09CF0001  # inc i0
+0x98010443  # call draw_char
+0x08430006  # add x 6
+0x098D0001  # inc j
+0x000D0006  # jl j name_len draw_highscore_loop
+0x780103F3  # 
+0x08430003  # add x 3
+0x224B0064  # div t i 100
+0x98010405  # call draw_num
+0x08430006  # add x 6
+0x2A4B0064  # mod t i 100
+0x2253000A  # div t 10
+0x98010405  # call draw_num
+0x08430006  # add x 6
+0x2A4B000A  # mod t i 10
+0x98010405  # call draw_num
+0xA0000000  # ret
+0x00130000  # je t 0 draw_num0
+0x6801041A  # 
+0x00130001  # je t 1 draw_num1
+0x6801041E  # 
+0x00130002  # je t 2 draw_num2
+0x68010422  # 
+0x00130003  # je t 3 draw_num3
+0x68010426  # 
+0x00130004  # je t 4 draw_num4
+0x6801042A  # 
+0x00130005  # je t 5 draw_num5
+0x6801042E  # 
+0x00130006  # je t 6 draw_num6
+0x68010432  # 
+0x00130007  # je t 7 draw_num7
+0x68010436  # 
+0x00130008  # je t 8 draw_num8
+0x6801043A  # 
+0x00130009  # je t 9 draw_num9
+0x6801043E  # 
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980105DA  # call char_0
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010609  # call char_1
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010622  # call char_2
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010647  # call char_3
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801066C  # call char_4
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010691  # call char_5
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980106B9  # call char_6
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980106E4  # call char_7
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980106FE  # call char_8
+0x60010442  # jmp draw_num_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010728  # call char_9
+0x60010442  # jmp draw_num_ret
+0xA0000000  # ret
+0x002B0030  # je key_code 48 draw_0
+0x6801048C  # 
+0x002B0031  # je key_code 49 draw_1
+0x68010490  # 
+0x002B0032  # je key_code 50 draw_2
+0x68010494  # 
+0x002B0033  # je key_code 51 draw_3
+0x68010498  # 
+0x002B0034  # je key_code 52 draw_4
+0x6801049C  # 
+0x002B0035  # je key_code 53 draw_5
+0x680104A0  # 
+0x002B0036  # je key_code 54 draw_6
+0x680104A4  # 
+0x002B0037  # je key_code 55 draw_7
+0x680104A8  # 
+0x002B0038  # je key_code 56 draw_8
+0x680104AC  # 
+0x002B0039  # je key_code 57 draw_9
+0x680104B0  # 
+0x002B0041  # je key_code 65 draw_A
+0x680104B4  # 
+0x002B0042  # je key_code 66 draw_B
+0x680104B8  # 
+0x002B0043  # je key_code 67 draw_C
+0x680104BC  # 
+0x002B0044  # je key_code 68 draw_D
+0x680104C0  # 
+0x002B0045  # je key_code 69 draw_E
+0x680104C4  # 
+0x002B0046  # je key_code 70 draw_F
+0x680104C8  # 
+0x002B0047  # je key_code 71 draw_G
+0x680104CC  # 
+0x002B0048  # je key_code 72 draw_H
+0x680104D0  # 
+0x002B0049  # je key_code 73 draw_I
+0x680104D4  # 
+0x002B004A  # je key_code 74 draw_J
+0x680104D8  # 
+0x002B004B  # je key_code 75 draw_K
+0x680104DC  # 
+0x002B004C  # je key_code 76 draw_L
+0x680104E0  # 
+0x002B004D  # je key_code 77 draw_M
+0x680104E4  # 
+0x002B004E  # je key_code 78 draw_N
+0x680104E8  # 
+0x002B004F  # je key_code 79 draw_O
+0x680104EC  # 
+0x002B0050  # je key_code 80 draw_P
+0x680104F0  # 
+0x002B0051  # je key_code 81 draw_Q
+0x680104F4  # 
+0x002B0052  # je key_code 82 draw_R
+0x680104F8  # 
+0x002B0053  # je key_code 83 draw_S
+0x680104FC  # 
+0x002B0054  # je key_code 84 draw_T
+0x68010500  # 
+0x002B0055  # je key_code 85 draw_U
+0x68010504  # 
+0x002B0056  # je key_code 86 draw_V
+0x68010508  # 
+0x002B0057  # je key_code 87 draw_W
+0x6801050C  # 
+0x002B0058  # je key_code 88 draw_X
+0x68010510  # 
+0x002B0059  # je key_code 89 draw_Y
+0x68010514  # 
+0x002B005A  # je key_code 90 draw_Z
+0x68010518  # 
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980105DA  # call char_0
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010609  # call char_1
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010622  # call char_2
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010647  # call char_3
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801066C  # call char_4
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010691  # call char_5
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980106B9  # call char_6
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980106E4  # call char_7
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980106FE  # call char_8
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010728  # call char_9
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010753  # call char_A
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801077B  # call char_B
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107AA  # call char_C
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107CC  # call char_D
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980107F4  # call char_E
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801081C  # call char_F
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801083C  # call char_G
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010866  # call char_H
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801088B  # call char_I
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980108A6  # call char_J
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980108C4  # call char_K
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980108E9  # call char_L
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010901  # call char_M
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801092C  # call char_N
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010955  # call char_O
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801097B  # call char_P
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x9801099E  # call char_Q
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980109C7  # call char_R
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x980109F3  # call char_S
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A1B  # call char_T
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A34  # call char_U
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A56  # call char_V
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A76  # call char_W
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010A9C  # call char_X
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010ABF  # call char_Y
+0x6001051C  # jmp draw_char_ret
+0xA8000001  # push x
+0xA8000002  # push y
+0x98010ADA  # call char_Z
+0x6001051C  # jmp draw_char_ret
+0xA0000000  # ret
+0xB2400000  # pop t
+0x00130000  # je t I get_I_data
+0x6801052C  # 
+0x00130001  # je t O get_O_data
+0x6801053C  # 
+0x00130002  # je t T get_T_data
+0x6801053E  # 
+0x00130003  # je t S get_S_data
+0x6801054E  # 
+0x00130004  # je t Z get_Z_data
+0x6801055F  # 
+0x00130005  # je t J get_J_data
+0x68010570  # 
+0x00130006  # je t L get_L_data
+0x68010581  # 
+0x001F0000  # je block_rotation 0 get_I0_data
+0x68010534  # 
+0x001F0001  # je block_rotation 1 get_I1_data
+0x68010536  # 
+0x001F0002  # je block_rotation 2 get_I2_data
+0x68010538  # 
+0x001F0003  # je block_rotation 3 get_I3_data
+0x6801053A  # 
+0x0C010F00  # mov block_data 0b0000111100000000
+0x60010591  # jmp get_block_data_ret
+0x0C012222  # mov block_data 0b0010001000100010
+0x60010591  # jmp get_block_data_ret
+0x0C0100F0  # mov block_data 0b0000000011110000
+0x60010591  # jmp get_block_data_ret
+0x0C014444  # mov block_data 0b0100010001000100
+0x60010591  # jmp get_block_data_ret
+0x0C016600  # mov block_data 0b0110011000000000
+0x60010591  # jmp get_block_data_ret
+0x001F0000  # je block_rotation 0 get_T0_data
+0x68010546  # 
+0x001F0001  # je block_rotation 1 get_T1_data
+0x68010548  # 
+0x001F0002  # je block_rotation 2 get_T2_data
+0x6801054A  # 
+0x001F0003  # je block_rotation 3 get_T3_data
+0x6801054C  # 
+0x0C014E00  # mov block_data 0b0100111000000000
+0x60010591  # jmp get_block_data_ret
+0x0C014640  # mov block_data 0b0100011001000000
+0x60010591  # jmp get_block_data_ret
+0x0C010E40  # mov block_data 0b0000111001000000
+0x60010591  # jmp get_block_data_ret
+0x0C014C40  # mov block_data 0b0100110001000000
+0x60010591  # jmp get_block_data_ret
+0x001F0000  # je block_rotation 0 get_S0_data
+0x68010556  # 
+0x001F0001  # je block_rotation 1 get_S1_data
+0x68010558  # 
+0x001F0002  # je block_rotation 2 get_S2_data
+0x6801055A  # 
+0x001F0003  # je block_rotation 3 get_S3_data
+0x6801055C  # 
+0x0C016C00  # mov block_data 0b0110110000000000
+0x60010591  # jmp get_block_data_ret
+0x0C014620  # mov block_data 0b0100011000100000
+0x60010591  # jmp get_block_data_ret
+0x0C0106C0  # mov block_data 0b0000011011000000
+0x60010591  # jmp get_block_data_ret
+0x0C008000  # mov block_data 0b1000110001000000
 0x00008C40  # 
-0x600102F3  # jmp get_block_data_ret
-0x00210000  # je block_rotation 0 get_Z0_data
-0x680102C9  # 
-0x00210001  # je block_rotation 1 get_Z1_data
-0x680102CC  # 
-0x00210002  # je block_rotation 2 get_Z2_data
-0x680102CE  # 
-0x00210003  # je block_rotation 3 get_Z3_data
-0x680102D0  # 
-0x0C408000  # mov block_data 0b1100011000000000
+0x60010591  # jmp get_block_data_ret
+0x001F0000  # je block_rotation 0 get_Z0_data
+0x68010567  # 
+0x001F0001  # je block_rotation 1 get_Z1_data
+0x6801056A  # 
+0x001F0002  # je block_rotation 2 get_Z2_data
+0x6801056C  # 
+0x001F0003  # je block_rotation 3 get_Z3_data
+0x6801056E  # 
+0x0C008000  # mov block_data 0b1100011000000000
 0x0000C600  # 
-0x600102F3  # jmp get_block_data_ret
-0x0C412640  # mov block_data 0b0010011001000000
-0x600102F3  # jmp get_block_data_ret
-0x0C410630  # mov block_data 0b0000011000110000
-0x600102F3  # jmp get_block_data_ret
-0x0C414C80  # mov block_data 0b0100110010000000
-0x600102F3  # jmp get_block_data_ret
-0x00210000  # je block_rotation 0 get_J0_data
-0x680102DA  # 
-0x00210001  # je block_rotation 1 get_J1_data
-0x680102DD  # 
-0x00210002  # je block_rotation 2 get_J2_data
-0x680102DF  # 
-0x00210003  # je block_rotation 3 get_J3_data
-0x680102E1  # 
-0x0C408000  # mov block_data 0b1000111000000000
+0x60010591  # jmp get_block_data_ret
+0x0C012640  # mov block_data 0b0010011001000000
+0x60010591  # jmp get_block_data_ret
+0x0C010630  # mov block_data 0b0000011000110000
+0x60010591  # jmp get_block_data_ret
+0x0C014C80  # mov block_data 0b0100110010000000
+0x60010591  # jmp get_block_data_ret
+0x001F0000  # je block_rotation 0 get_J0_data
+0x68010578  # 
+0x001F0001  # je block_rotation 1 get_J1_data
+0x6801057B  # 
+0x001F0002  # je block_rotation 2 get_J2_data
+0x6801057D  # 
+0x001F0003  # je block_rotation 3 get_J3_data
+0x6801057F  # 
+0x0C008000  # mov block_data 0b1000111000000000
 0x00008E00  # 
-0x600102F3  # jmp get_block_data_ret
-0x0C416440  # mov block_data 0b0110010001000000
-0x600102F3  # jmp get_block_data_ret
-0x0C410E20  # mov block_data 0b0000111000100000
-0x600102F3  # jmp get_block_data_ret
-0x0C4144C0  # mov block_data 0b0100010011000000
-0x600102F3  # jmp get_block_data_ret
-0x00210000  # je block_rotation 0 get_L0_data
-0x680102EB  # 
-0x00210001  # je block_rotation 1 get_L1_data
-0x680102ED  # 
-0x00210002  # je block_rotation 2 get_L2_data
-0x680102EF  # 
-0x00210003  # je block_rotation 3 get_L3_data
-0x680102F1  # 
-0x0C412E00  # mov block_data 0b0010111000000000
-0x600102F3  # jmp get_block_data_ret
-0x0C414460  # mov block_data 0b0100010001100000
-0x600102F3  # jmp get_block_data_ret
-0x0C410E80  # mov block_data 0b0000111010000000
-0x600102F3  # jmp get_block_data_ret
-0x0C408000  # mov block_data 0b1100010001000000
+0x60010591  # jmp get_block_data_ret
+0x0C016440  # mov block_data 0b0110010001000000
+0x60010591  # jmp get_block_data_ret
+0x0C010E20  # mov block_data 0b0000111000100000
+0x60010591  # jmp get_block_data_ret
+0x0C0144C0  # mov block_data 0b0100010011000000
+0x60010591  # jmp get_block_data_ret
+0x001F0000  # je block_rotation 0 get_L0_data
+0x68010589  # 
+0x001F0001  # je block_rotation 1 get_L1_data
+0x6801058B  # 
+0x001F0002  # je block_rotation 2 get_L2_data
+0x6801058D  # 
+0x001F0003  # je block_rotation 3 get_L3_data
+0x6801058F  # 
+0x0C012E00  # mov block_data 0b0010111000000000
+0x60010591  # jmp get_block_data_ret
+0x0C014460  # mov block_data 0b0100010001100000
+0x60010591  # jmp get_block_data_ret
+0x0C010E80  # mov block_data 0b0000111010000000
+0x60010591  # jmp get_block_data_ret
+0x0C008000  # mov block_data 0b1100010001000000
 0x0000C440  # 
 0xA0000000  # ret
-0xB3400000  # pop block_type
-0x001B0000  # je block_type I set_I_color
-0x68010303  # 
-0x001B0001  # je block_type O set_O_color
-0x68010306  # 
-0x001B0002  # je block_type T set_T_color
-0x68010309  # 
-0x001B0003  # je block_type S set_S_color
-0x6801030C  # 
-0x001B0004  # je block_type Z set_Z_color
-0x6801030F  # 
-0x001B0005  # je block_type J set_J_color
-0x68010312  # 
-0x001B0006  # je block_type L set_L_color
-0x68010314  # 
-0x0C808000  # mov block_color I_color
+0xB2400000  # pop t
+0x00130000  # je t I set_I_color
+0x680105A1  # 
+0x00130001  # je t O set_O_color
+0x680105A4  # 
+0x00130002  # je t T set_T_color
+0x680105A7  # 
+0x00130003  # je t S set_S_color
+0x680105AA  # 
+0x00130004  # je t Z set_Z_color
+0x680105AD  # 
+0x00130005  # je t J set_J_color
+0x680105B0  # 
+0x00130006  # je t L set_L_color
+0x680105B2  # 
+0x0C408000  # mov block_color I_color
 0x0000CDCD  # 
-0x60010316  # jmp set_block_color_ret
-0x0C808000  # mov block_color O_color
+0x600105B4  # jmp set_block_color_ret
+0x0C408000  # mov block_color O_color
 0x00CDCD00  # 
-0x60010316  # jmp set_block_color_ret
-0x0C808000  # mov block_color T_color
+0x600105B4  # jmp set_block_color_ret
+0x0C408000  # mov block_color T_color
 0x009A00CD  # 
-0x60010316  # jmp set_block_color_ret
-0x0C808000  # mov block_color S_color
+0x600105B4  # jmp set_block_color_ret
+0x0C408000  # mov block_color S_color
 0x0000CD00  # 
-0x60010316  # jmp set_block_color_ret
-0x0C808000  # mov block_color Z_color
+0x600105B4  # jmp set_block_color_ret
+0x0C408000  # mov block_color Z_color
 0x00CD0000  # 
-0x60010316  # jmp set_block_color_ret
-0x0C8100CD  # mov block_color J_color
-0x60010316  # jmp set_block_color_ret
-0x0C808000  # mov block_color L_color
+0x600105B4  # jmp set_block_color_ret
+0x0C4100CD  # mov block_color J_color
+0x600105B4  # jmp set_block_color_ret
+0x0C408000  # mov block_color L_color
 0x00CD6600  # 
 0xA0000000  # ret
 0x01400000  # clr i
 0x01800000  # clr j
 0x01C00000  # clr i0
 0x02000000  # clr j0
-0x0A800011  # mov t2 block_data
+0x0A800010  # mov t2 block_data
 0x08C00001  # mov x0 x
 0x09000002  # mov y0 y
 0x3A548000  # and t t2 0b1000000000000000
 0x00008000  # 
 0x52950001  # shl t2 1
 0x00130000  # je t 0 draw_done
-0x6801032E  # 
+0x680105CC  # 
 0xE8060004  # draw x0 y0
 0x08C70001  # inc x0
 0x09CF0001  # inc i0
 0x000F0005  # jl i0 block_size draw_block_loop0
-0x78010323  # 
+0x780105C1  # 
 0x10C70005  # sub x0 block_size
 0x09090001  # inc y0
 0x01C00000  # clr i0
 0x0A110001  # inc j0
 0x00110005  # jl j0 block_size draw_block_loop0
-0x78010323  # 
+0x780105C1  # 
 0x08430005  # add x block_size
 0x094B0001  # inc i
 0x02000000  # clr j0
 0x000B0004  # jl i 4 draw_block_loop
-0x7801031C  # 
+0x780105BA  # 
 0x0A410005  # mov t block_size
 0x1A530004  # mul t 4
 0x10420009  # sub x t
@@ -824,150 +1494,7 @@
 0x01400000  # clr i
 0x098D0001  # inc j
 0x000D0004  # jl j 4 draw_block_loop
-0x7801031C  # 
-0xA0000000  # ret
-0x0DC0000B  # mov block_x_new block_x
-0x0E190001  # add block_y_new block_y 1
-0x98010378  # call check_collision
-0x00350000  # je collision 0 move_down_cont
-0x68010366  # 
-0x0EC10001  # mov end 1
-0x01400000  # clr i
-0x0A800011  # mov t2 block_data
-0x1E59000C  # mul addr block_y board_width
-0x0E72000B  # add addr block_x
-0x0980000C  # mov j block_y
-0x3A548000  # and t t2 0b1111111100000000
-0x0000FF00  # 
-0x00130000  # jne t 0 max_row1
-0x7001034C  # 
-0x098D0001  # inc j
-0x3A548000  # and t t2 0b1111000000000000
-0x0000F000  # 
-0x00130000  # jne t 0 max_row2
-0x70010351  # 
-0x098D0001  # inc j
-0x000C001D  # jge j max_row store_block
-0x90010354  # 
-0x0F400006  # mov max_row j
-0x3A548000  # and t t2 0b1000000000000000
-0x00008000  # 
-0x52950001  # shl t2 1
-0x3A948000  # and t2 0b1111111111111111
-0x0000FFFF  # 
-0x00150000  # je t2 0 move_down_ret
-0x68010377  # 
-0x00130000  # je t 0 skip_store_block
-0x6801035E  # 
-0xB8320012  # sw [addr] block_color
-0x0E730001  # inc addr
-0x094B0001  # inc i
-0x000B0004  # jl i 4 store_block
-0x78010354  # 
-0x0E73000C  # add addr board_width
-0x16730004  # sub addr 4
-0x01400000  # clr i
-0x60010354  # jmp store_block
-0x0A410005  # mov t block_size
-0x1852000B  # mul x t block_x
-0x1892000C  # mul y t block_y
-0x10430002  # sub x 2
-0x08850003  # add y 3
-0xE0010000  # sc 0x000000
-0x98010317  # call draw_block
-0x0B190001  # inc block_y
-0x0A410005  # mov t block_size
-0x1852000B  # mul x t block_x
-0x1892000C  # mul y t block_y
-0x10430002  # sub x 2
-0x08850003  # add y 3
-0xA800000E  # push block_cur
-0x980102F4  # call set_block_color
-0xE0000012  # sc block_color
-0x98010317  # call draw_block
-0xA0000000  # ret
-0x01400000  # clr i
-0x06800000  # clr collision
-0x0A800011  # mov t2 block_data
-0x1E71000C  # mul addr block_y_new board_width
-0x0E720017  # add addr block_x_new
-0x16730001  # dec addr
-0x0E730001  # inc addr
-0x094B0001  # inc i
-0x3A548000  # and t t2 0b1000000000000000
-0x00008000  # 
-0x52950001  # shl t2 1
-0x3A948000  # and t2 0b1111111111111111
-0x0000FFFF  # 
-0x00150000  # je t2 0 check_collision_ret
-0x68010393  # 
-0x00130000  # je t 0 skip_check
-0x6801038C  # 
-0xC2720000  # lw t [addr]
-0x00130000  # jne t 0 is_collision
-0x70010392  # 
-0x000B0004  # jl i 4 check_collision_loop
-0x7801037E  # 
-0x0E73000C  # add addr board_width
-0x16730004  # sub addr 4
-0x01400000  # clr i
-0x6001037E  # jmp check_collision_loop
-0x0E810001  # mov collision 1
-0xA0000000  # ret
-0x0940001D  # mov i max_row
-0x09810002  # mov j 2
-0x1E7B000C  # mul addr max_row board_width
-0x0E730001  # inc addr
-0xC2720000  # lw t [addr]
-0x00130000  # je t 0 check_next_line
-0x6801039F  # 
-0x098D0001  # inc j
-0x000D000C  # jge j board_width clear_line
-0x900103A5  # 
-0x60010397  # jmp check_line_full_loop
-0x094B0001  # inc i
-0x01800000  # clr j
-0x1E4B000C  # mul addr i board_width
-0x000B0013  # jl i board_height check_line_full_loop
-0x78010397  # 
-0x600103AD  # jmp check_line_full_ret
-0x114B0001  # dec i
-0x1E4B000C  # mul addr i board_width
-0x980103AE  # call draw_line
-0x000A001D  # jge i max_row clear_line
-0x900103A5  # 
-0xE0010000  # sc 0x000000
-0x98010235  # call draw_score
-0x0CE70001  # inc score
-0xA0000000  # ret
-0x08410003  # mov x 3
-0x0A410005  # mov t block_size
-0x0A8B0001  # add t2 i 1
-0x1892000A  # mul y t t2
-0x08850003  # add y 3
-0x09810002  # mov j 2
-0x0E730001  # inc addr
-0xC4B20000  # lw block_color [addr]
-0xE0000012  # sc block_color
-0x08C00001  # mov x0 x
-0x09000002  # mov y0 y
-0x01C00000  # clr i0
-0x02000000  # clr j0
-0xE8060004  # draw x0 y0
-0x08C70001  # inc x0
-0x09CF0001  # inc i0
-0x000F0005  # jl i0 block_size draw_line_loop0
-0x780103BB  # 
-0x10C70005  # sub x0 block_size
-0x09090001  # inc y0
-0x01C00000  # clr i0
-0x0A110001  # inc j0
-0x00110005  # jl j0 block_size draw_line_loop0
-0x780103BB  # 
-0x08430005  # add x block_size
-0x098D0001  # inc j
-0x000D000C  # jl j board_width draw_line_loop
-0x780103B4  # 
+0x780105BA  # 
 0xA0000000  # ret
 0xB7C00000  # pop character_y
 0xB7800000  # pop character_x
@@ -1388,7 +1915,7 @@
 0xA0000000  # ret
 0xB7C00000  # pop character_y
 0xB7800000  # pop character_x
-0x0FBD0006  # add character_x 6
+0x0FFF0006  # add character_y 6
 0xE83C001F  # draw character_x character_y
 0x17FF0001  # dec character_y
 0xE83C001F  # draw character_x character_y
@@ -1550,6 +2077,38 @@
 0xB7C00000  # pop character_y
 0xB7800000  # pop character_x
 0x0FBD0004  # add character_x 4
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x17FF0003  # sub character_y 3
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0x0FBD0004  # add character_x 4
 0x0FFF0001  # inc character_y
 0xE83C001F  # draw character_x character_y
 0x17BD0001  # dec character_x
@@ -1651,6 +2210,73 @@
 0x0FBD0001  # inc character_x
 0xE83C001F  # draw character_x character_y
 0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0004  # add character_x 4
+0x17FF0006  # sub character_y 6
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
 0xE83C001F  # draw character_x character_y
 0xA0000000  # ret
 0xB7C00000  # pop character_y
@@ -1836,6 +2462,47 @@
 0xA0000000  # ret
 0xB7C00000  # pop character_y
 0xB7800000  # pop character_x
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0002  # add character_y 2
+0xE83C001F  # draw character_x character_y
+0x17BD0002  # sub character_x 2
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0002  # add character_x 2
+0x0FFF0003  # add character_y 3
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
 0x0FFF0006  # add character_y 6
 0xE83C001F  # draw character_x character_y
 0x17FF0001  # dec character_y
@@ -1954,6 +2621,40 @@
 0xE83C001F  # draw character_x character_y
 0x0FFF0001  # inc character_y
 0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
 0x0FBD0001  # inc character_x
 0x0FFF0001  # inc character_y
 0xE83C001F  # draw character_x character_y
@@ -1964,6 +2665,44 @@
 0x17FF0001  # dec character_y
 0xE83C001F  # draw character_x character_y
 0x0FBD0001  # inc character_x
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x0FFF0002  # add character_y 2
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0x17FF0001  # dec character_y
+0xE83C001F  # draw character_x character_y
 0x17FF0001  # dec character_y
 0xE83C001F  # draw character_x character_y
 0x17FF0001  # dec character_y
@@ -2035,6 +2774,57 @@
 0x0FFF0001  # inc character_y
 0xE83C001F  # draw character_x character_y
 0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x17BD0001  # dec character_x
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0x0FBD0001  # inc character_x
+0xE83C001F  # draw character_x character_y
+0xA0000000  # ret
+0xB7C00000  # pop character_y
+0xB7800000  # pop character_x
+0x0FBD0002  # add character_x 2
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0001  # inc character_y
+0xE83C001F  # draw character_x character_y
+0x0FFF0002  # add character_y 2
 0xE83C001F  # draw character_x character_y
 0xA0000000  # ret
 0xB7C00000  # pop character_y

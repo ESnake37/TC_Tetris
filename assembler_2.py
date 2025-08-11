@@ -5,42 +5,44 @@ from tkinter import filedialog
 
 
 opcode_map = {
-    'nop' : '00000',
-    'cmp' : '00000',
-    'clr' : '00000',
-    'add' : '00001',
-    'mov' : '00001',
-    'inc' : '00001',
-    'sub' : '00010',
-    'dec' : '00010',
-    'mul' : '00011',
-    'div' : '00100',
-    'mod' : '00101',
-    'not' : '00110',
-    'and' : '00111',
-    'or'  : '01000',
-    'xor' : '01001',
-    'shl' : '01010',
-    'shr' : '01011',
-    'jmp' : '01100',
-    'je'  : '01101',
-    'jne' : '01110',
-    'jl'  : '01111',
-    'jle' : '10000',
-    'jg'  : '10001',
-    'jge' : '10010',
-    'call': '10011',
-    'ret' : '10100',
-    'push': '10101',
-    'pop' : '10110',
-    'sw'  : '10111',
-    'lw'  : '11000',
-    'sd'  : '11001',
-    'ld'  : '11010',
-    'in'  : '11011',
-    'sc'  : '11100',
-    'draw': '11101',
-    'halt': '11110'
+    'nop'    : '00000',
+    'cmp'    : '00000',
+    'clr'    : '00000',
+    'add'    : '00001',
+    'mov'    : '00001',
+    'inc'    : '00001',
+    'sub'    : '00010',
+    'dec'    : '00010',
+    'neg'    : '00010',
+    'mul'    : '00011',
+    'div'    : '00100',
+    'mod'    : '00101',
+    'not'    : '00110',
+    'and'    : '00111',
+    'or'     : '01000',
+    'xor'    : '01001',
+    'shl'    : '01010',
+    'shr'    : '01011',
+    'jmp'    : '01100',
+    'je'     : '01101',
+    'jne'    : '01110',
+    'jl'     : '01111',
+    'jle'    : '10000',
+    'jg'     : '10001',
+    'jge'    : '10010',
+    'call'   : '10011',
+    'ret'    : '10100',
+    'push'   : '10101',
+    'pop'    : '10110',
+    'sw'     : '10111',
+    'lw'     : '11000',
+    'sd'     : '11001',
+    'ld'     : '11010',
+    'in'     : '11011',
+    'sc'     : '11100',
+    'draw'   : '11101',
+    'console': '11110',
+    'halt'   : '11111'
 }
 
 # 寄存器映射
@@ -188,7 +190,7 @@ def parse_instruction(lines, line_map, assembly_lines):
                 machine_code.append(f"{opcode} 00000 00000 10 {jmp_addr}")
                 
             # 处理伪指令
-            elif op in ['mov', 'inc', 'dec', 'clr']:
+            elif op in ['mov', 'inc', 'dec', 'neg', 'clr']:
                 if op == 'mov':
                     if len(operands) != 2:
                         raise ValueError(f"第{line_num}行错误：{op} 指令需要两个操作数")
@@ -206,13 +208,20 @@ def parse_instruction(lines, line_map, assembly_lines):
                     else:
                         rs2 = parse_register(operands[1], line_num)
                         machine_code.append(f"{opcode} {rd:05b} {rs1:05b} 00 0000000000{rs2:05b}")
-                
+
                 elif op in ['inc', 'dec']:
                     if len(operands) != 1:
                         raise ValueError(f"第{line_num}行错误：{op} 指令需要一个操作数")
                     rd = parse_register(operands[0], line_num)
                     rs1 = parse_register(operands[0], line_num)
                     machine_code.append(f"{opcode} {rd:05b} {rs1:05b} 10 000000000000001")
+                
+                elif op == 'neg':
+                    if len(operands) != 1:
+                        raise ValueError(f"第{line_num}行错误：{op} 指令需要一个操作数")
+                    rd = parse_register(operands[0], line_num)
+                    rs2 = parse_register(operands[0], line_num)
+                    machine_code.append(f"{opcode} {rd:05b} 00000 00 0000000000{rs2:05b}")
                 
                 elif op == 'clr':
                     if len(operands) != 1:
@@ -229,7 +238,7 @@ def parse_instruction(lines, line_map, assembly_lines):
                     seek = f"{seek & ((1 << 15) - 1):015b}"
                     machine_code.append(f"{opcode} 00000 {data:05b} 10 {seek}")
                 else:
-                    machine_code.append(f"{opcode} 00000 {data:05b} 10 0000000000{seek:05b}")
+                    machine_code.append(f"{opcode} 00000 {data:05b} 00 0000000000{seek:05b}")
             
             # 处理其他指令
             else:
@@ -292,7 +301,7 @@ def parse_instruction(lines, line_map, assembly_lines):
                         rs2 = parse_register(operands[1], line_num)
                         machine_code.append(f"{opcode} {rd:05b} {rs1:05b} 00 0000000000{rs2:05b}")
 
-                    elif op in ['push']:
+                    elif op in ['push', 'console']:
                         if len(operands) != 1:
                             raise ValueError(f"第{line_num}行错误：{op} 指令需要一个操作数")
                         rd = 0

@@ -10,12 +10,12 @@ const t = r9
 const t2 = r10
 const block_x = r11
 const block_y = r12
-const block_type = r13
-const block_cur = r14
-const block_next = r15
-const block_rotation = r16
-const block_data = r17
-const block_color = r18
+const block_cur = r13
+const block_next = r14
+const block_rotation = r15
+const block_data = r16
+const block_color = r17
+const seed = r18
 const score = r19
 const delay = r20
 const key_code = r21
@@ -29,6 +29,7 @@ const hard_drop_flag = r28
 const max_row = r29
 const character_x = r30
 const character_y = r31
+const rank = r1
 const screen_width = 128
 const screen_height = 96
 const screen_color = 0x000000
@@ -60,6 +61,13 @@ const next_color = 0xffffff
 const score_x = 65
 const score_y = 20
 const score_color = 0xffffff
+const highscore_x = 65
+const highscore_y = 40
+const highscore_color = 0xffffff
+const gameover_x = 38
+const gameover_y = 44
+const gameover_color = 0xffffff
+const name_len = 6
 const I = 0
 const O = 1
 const T = 2
@@ -74,13 +82,49 @@ const S_color = 0x00CD00
 const Z_color = 0xCD0000
 const J_color = 0x0000CD
 const L_color = 0xCD6600
-const backspace = 26
-const enter = 53
-const space = 68
-const left = 69
-const up = 70
-const right = 71
-const down = 72
+const backspace = 4
+const enter = 5
+const left = 15
+const up = 16
+const right = 17
+const down = 18
+const space = 32
+const num_0 = 48
+const num_1 = 49
+const num_2 = 50
+const num_3 = 51
+const num_4 = 52
+const num_5 = 53
+const num_6 = 54
+const num_7 = 55
+const num_8 = 56
+const num_9 = 57
+const ltr_A = 65
+const ltr_B = 66
+const ltr_C = 67
+const ltr_D = 68
+const ltr_E = 69
+const ltr_F = 70
+const ltr_G = 71
+const ltr_H = 72
+const ltr_I = 73
+const ltr_J = 74
+const ltr_K = 75
+const ltr_L = 76
+const ltr_M = 77
+const ltr_N = 78
+const ltr_O = 79
+const ltr_P = 80
+const ltr_Q = 81
+const ltr_R = 82
+const ltr_S = 83
+const ltr_T = 84
+const ltr_U = 85
+const ltr_V = 86
+const ltr_W = 87
+const ltr_X = 88
+const ltr_Y = 89
+const ltr_Z = 90
 
 
 
@@ -93,26 +137,25 @@ main:
 	call draw_level
 	call set_level_color
 	call draw_difficulty
-	; 游戏菜单
-	menu_loop:
+	menu:
 		in key_code kbd
-		jge key_code 0 menu_loop
+		jge key_code 0 menu
 		and key_code 0xff
 		je key_code up level_up
 		je key_code down level_down
 		je key_code enter init_game
-		jmp menu_loop
+		jmp menu
 		level_up:
 			sc 0x000000
 			call draw_difficulty
 			dec level
-			jge level 0 not_warp
+			jge level 0 skip_warp
 			mov level easy
-			not_warp:
+			skip_warp:
 			mod level 4
 			call set_level_color
 			call draw_difficulty
-			jmp menu_loop
+			jmp menu
 		level_down:
 			sc 0x000000
 			call draw_difficulty
@@ -120,9 +163,9 @@ main:
 			mod level 4
 			call set_level_color
 			call draw_difficulty
-			jmp menu_loop
-	; 游戏初始化
+			jmp menu
 	init_game:
+		in seed time
 		call gen_block
 		sc 0xffffff
 		call draw_play
@@ -133,25 +176,25 @@ main:
 		sub max_row 2
 		clr score
 		call draw_score_area
+		call draw_highscore_area
 		mul level level
-		mul delay level 600
-		clr i
+		mul level 700
+		clr addr
 		mov t board_height
 		dec t
 		mul t board_width
 		store_board_lr:
-			sw [i] 1
-			dec i
-			add i board_width
-			sw [i] 1
-			inc i
-			jl i t store_board_lr
+			sw [addr] 1
+			dec addr
+			add addr board_width
+			sw [addr] 1
+			inc addr
+			jl addr t store_board_lr
 		add t board_width
 		store_board_down:
-			sw [i] 1
-			inc i
-			jl i t store_board_down
-	; 游戏主循环
+			sw [addr] 1
+			inc addr
+			jl addr t store_board_down
 	main_loop:
 		clr end
 		clr block_rotation
@@ -191,10 +234,11 @@ main:
 		call draw_block
 		mov block_x 4
 		clr block_y
+		sub level 10
 		main_loop_start:
 			je end 1 main_loop
 			je hard_drop_flag 1 fall_wait
-			mul delay level 500
+			mov delay level
 			fall_wait:
 				in key_code kbd
 				jl key_code 0 handle_key
@@ -287,20 +331,372 @@ main:
 				mov hard_drop_flag 1
 				clr delay
 				jmp main_loop_start
+	gameover:
+		sc gameover_color
+		call check_rank
+		call init_screen
+		sc gameover_color
+		mov x gameover_x
+		mov y gameover_y
+		push x
+		push y
+		call char_G
+		add x 6
+		push x
+		push y
+		call char_A
+		add x 6
+		push x
+		push y
+		call char_M
+		add x 6
+		push x
+		push y
+		call char_E
+		add x 12
+		push x
+		push y
+		call char_O
+		add x 6
+		push x
+		push y
+		call char_V
+		add x 6
+		push x
+		push y
+		call char_E
+		add x 6
+		push x
+		push y
+		call char_R
+		halt
 
 
+
+check_rank:
+	clr addr
+	mov t2 name_len
+	inc t2
+	mul t2 3
+	dec t2
+	ld t [0]
+	sw [addr] t
+	rank_load:
+		inc addr
+		ld t [1]
+		sw [addr] t
+		jl addr t2 rank_load
+	neg t2
+	ld t [t2]
+	clr addr
+	lw t [addr]
+	jg score t rank1
+	add addr name_len
+	inc addr
+	lw t [addr]
+	jg score t rank2
+	add addr name_len
+	inc addr
+	lw t [addr]
+	jg score t rank3
+	jmp check_rank_ret
+	rank1:
+		mov t name_len
+		inc t
+		add addr t
+		clr i
+		call rank_shift
+		clr addr
+		clr i
+		call rank_shift
+		clr addr
+		sw [addr] score
+		call newbest
+		jmp check_rank_ret
+	rank2:
+		mov t name_len
+		inc t
+		clr i
+		call rank_shift
+		sub addr t
+		sw [addr] score
+		call newbest
+		jmp check_rank_ret
+	rank3:
+		sw [addr] score
+		call newbest
+	check_rank_ret:
+		ret
+
+rank_shift:
+	lw t2 [addr]
+	add addr t
+	sw [addr] t2
+	inc addr
+	sub addr t
+	inc i
+	jl i t rank_shift
+	ret
+
+newbest:
+	call init_screen
+	sc gameover_color
+	mov x gameover_x
+	mov y gameover_y
+	sub y 16
+	push x
+	push y
+	call char_N
+	add x 6
+	push x
+	push y
+	call char_E
+	add x 6
+	push x
+	push y
+	call char_W
+	add x 12
+	push x
+	push y
+	call char_B
+	add x 6
+	push x
+	push y
+	call char_E
+	add x 6
+	push x
+	push y
+	call char_S
+	add x 6
+	push x
+	push y
+	call char_T
+	add x 6
+	push x
+	push y
+	call char_exclamation_mark
+	mov x gameover_x
+	sub x 6
+	add y 20
+	push x
+	push y
+	call char_N
+	add x 6
+	push x
+	push y
+	call char_A
+	add x 6
+	push x
+	push y
+	call char_M
+	add x 6
+	push x
+	push y
+	call char_E
+	add x 6
+	push x
+	push y
+	call char_colon
+	clr i
+	input_name:
+		in key_code kbd
+		jl key_code 0 input_char
+		jmp input_name
+		input_char:
+			and key_code 0xff
+			je key_code enter rank_save
+			je key_code backspace delete_char
+			jge i name_len input_name
+			add x 6
+			sc gameover_color
+			call draw_char
+			inc i
+			inc addr
+			sw [addr] key_code
+			jmp input_name
+		delete_char:
+			jle i 0 input_name
+			lw key_code [addr]
+			sw [addr] 0
+			sc 0x000000
+			call draw_char
+			dec i
+			dec addr
+			sub x 6
+			jmp input_name
+	rank_save:
+		clr addr
+		mov t name_len
+		inc t
+		mul t 3
+		lw t2 [addr]
+		sd [0] t2
+		inc addr
+		rank_save_loop:
+			lw t2 [addr]
+			sd [1] t2
+			inc addr
+			jl addr t rank_save_loop
+	ret
+
+move_down:
+	mov block_x_new block_x
+	add block_y_new block_y 1
+	call check_collision
+	je collision 0 move_down_cont
+	mov end 1
+	clr i
+	mov t2 block_data
+	mul addr block_y board_width
+	add addr block_x
+	mov j block_y
+	and t t2 0b1111111100000000
+	jne t 0 max_row1
+	inc j
+	max_row1:
+	and t t2 0b1111000000000000
+	jne t 0 max_row2
+	inc j
+	max_row2:
+	jge j max_row store_block
+	mov max_row j
+	je max_row 0 gameover
+	store_block:
+		and t t2 0b1000000000000000
+		je t2 0 move_down_ret
+		shl t2 1
+		and t2 0b1111111111111111
+		je t 0 skip_store_block
+		sw [addr] block_color
+		skip_store_block:
+		inc addr
+		inc i
+		jl i 4 store_block
+		add addr board_width
+		sub addr 4
+		clr i
+		jmp store_block
+	move_down_cont:
+		mov t block_size
+		mul x t block_x
+		mul y t block_y
+		sub x 2
+		add y 3
+		sc 0x000000
+		call draw_block
+		inc block_y
+		mov t block_size
+		mul x t block_x
+		mul y t block_y
+		sub x 2
+		add y 3
+		push block_cur
+		call set_block_color
+		sc block_color
+		call draw_block
+	move_down_ret:
+		ret
+
+check_collision:
+	clr i
+	clr collision
+	mov t2 block_data
+	mul addr block_y_new board_width
+	add addr block_x_new
+	dec addr
+	check_collision_loop:
+		inc addr
+		inc i
+		and t t2 0b1000000000000000
+		je t2 0 check_collision_ret
+		shl t2 1
+		and t2 0b1111111111111111
+		je t 0 skip_check
+		lw t [addr]
+		jne t 0 is_collision
+		skip_check:
+		jl i 4 check_collision_loop
+		add addr board_width
+		sub addr 4
+		clr i
+		jmp check_collision_loop
+	is_collision:
+		mov collision 1
+	check_collision_ret:
+		ret
+
+check_line_full:
+	mov i max_row
+	mov j 2
+	mul addr max_row board_width
+	check_line_loop:
+		inc addr
+		lw t [addr]
+		je t 0 check_next_line
+		inc j
+		jge j board_width clear_line
+		jmp check_line_loop
+		check_next_line:
+			inc i
+			clr j
+			mov t2 i
+			mul addr i board_width
+			jl i board_height check_line_loop
+			jmp check_line_full_ret
+	clear_line:
+		dec t2
+		mul addr t2 board_width
+		call draw_line
+		jge t2 max_row clear_line
+		sc 0x000000
+		call draw_score
+		inc score
+		jmp check_next_line
+	check_line_full_ret:
+		ret
+
+draw_line:
+	mov x 3
+	add t t2 1
+	mul y t block_size
+	add y 3
+	mov j 2
+	draw_line_loop:
+		inc addr
+		lw block_color [addr]
+		add t addr board_width
+		sw [t] block_color
+		sc block_color
+		mov x0 x
+		mov y0 y
+		clr i0
+		clr j0
+		draw_line_loop0:
+			draw x0 y0
+			inc x0
+			inc i0
+			jl i0 block_size draw_line_loop0
+			sub x0 block_size
+			inc y0
+			clr i0
+			inc j0
+			jl j0 block_size draw_line_loop0
+		add x block_size
+		inc j
+		jl j board_width draw_line_loop
+	ret
 
 init_screen:
-	sc screen_color
+	clr x
 	clr y
-	y_loop:
-	    clr x
-	x_loop:
+	sc screen_color
+	init_screen_loop:
 	    draw x y
 	    inc x
-	    jl x screen_width x_loop
+	    jl x screen_width init_screen_loop
+		clr x
 	    inc y
-	    jl y screen_height y_loop
+	    jl y screen_height init_screen_loop
 	ret
 
 draw_title:
@@ -412,7 +808,7 @@ draw_level:
 	add x 6
 	push x
 	push y
-	call colon
+	call char_colon
 	ret
 
 set_level_color:
@@ -529,11 +925,10 @@ draw_difficulty:
 		ret
 
 gen_block:
-	in t time
-	mul t 1103515245
-	add t 12345
-	mod t 2147483648
-	shr block_next t 16
+	mul seed 1103515245
+	add seed 12345
+	mod seed 2147483648
+	shr block_next seed 16
 	mod block_next 7
 	ret
 
@@ -624,7 +1019,7 @@ draw_next_area:
 	add x 6
 	push x
 	push y
-	call colon
+	call char_colon
 	ret
 
 draw_score_area:
@@ -653,14 +1048,13 @@ draw_score_area:
 	add x 6
 	push x
 	push y
-	call colon
+	call char_colon
 	ret
 
 draw_score:
 	mov x score_x
 	add x 36
 	mov y score_y
-
 	div t score 100
 	call draw_num
 	add x 6
@@ -670,83 +1064,402 @@ draw_score:
 	add x 6
 	mod t score 10
 	call draw_num
+	ret
 
+draw_highscore_area:
+	mov x highscore_x
+	mov y highscore_y
+	sc highscore_color
+	push x
+	push y
+	call char_H
+	add x 6
+	push x
+	push y
+	call char_I
+	add x 6
+	push x
+	push y
+	call char_G
+	add x 6
+	push x
+	push y
+	call char_H
+	add x 9
+	push x
+	push y
+	call char_S
+	add x 6
+	push x
+	push y
+	call char_C
+	add x 6
+	push x
+	push y
+	call char_O
+	add x 6
+	push x
+	push y
+	call char_R
+	add x 6
+	push x
+	push y
+	call char_E
+	ld i [0]
+	clr i0
+	je i 0 draw_highscore_area_ret
+	mov x highscore_x
+	sub x 5
+	add y 12
+	push x
+	push y
+	call char_1
+	add x 9
+	call draw_highscore
+	ld i [1]
+	inc i0
+	je i 0 draw_highscore_area_ret
+	mov x highscore_x
+	sub x 5
+	add y 12
+	push x
+	push y
+	call char_2
+	add x 9
+	call draw_highscore
+	ld i [1]
+	inc i0
+	je i 0 draw_highscore_area_ret
+	mov x highscore_x
+	sub x 5
+	add y 12
+	push x
+	push y
+	call char_3
+	add x 9
+	call draw_highscore
+	draw_highscore_area_ret:
+		neg i0
+		ld t [i0]
+		ret
+
+draw_highscore:
+	clr j
+	draw_highscore_loop:
+		ld key_code [1]
+		inc i0
+		call draw_char
+		add x 6
+		inc j
+		jl j name_len draw_highscore_loop
+	add x 3
+	div t i 100
+	call draw_num
+	add x 6
+	mod t i 100
+	div t 10
+	call draw_num
+	add x 6
+	mod t i 10
+	call draw_num
 	ret
 
 draw_num:
-	je t 0 draw_0
-	je t 1 draw_1
-	je t 2 draw_2
-	je t 3 draw_3
-	je t 4 draw_4
-	je t 5 draw_5
-	je t 6 draw_6
-	je t 7 draw_7
-	je t 8 draw_8
-	je t 9 draw_9
-	draw_0:
+	je t 0 draw_num0
+	je t 1 draw_num1
+	je t 2 draw_num2
+	je t 3 draw_num3
+	je t 4 draw_num4
+	je t 5 draw_num5
+	je t 6 draw_num6
+	je t 7 draw_num7
+	je t 8 draw_num8
+	je t 9 draw_num9
+	jmp draw_num_ret
+	draw_num0:
 		push x
 		push y
-		call num0
+		call char_0
 		jmp draw_num_ret
-	draw_1:
+	draw_num1:
 		push x
 		push y
-		call num1
+		call char_1
 		jmp draw_num_ret
-	draw_2:
+	draw_num2:
 		push x
 		push y
-		call num2
+		call char_2
 		jmp draw_num_ret
-	draw_3:
+	draw_num3:
 		push x
 		push y
-		call num3
+		call char_3
 		jmp draw_num_ret
-	draw_4:
+	draw_num4:
 		push x
 		push y
-		call num4
+		call char_4
 		jmp draw_num_ret
-	draw_5:
+	draw_num5:
 		push x
 		push y
-		call num5
+		call char_5
 		jmp draw_num_ret
-	draw_6:
+	draw_num6:
 		push x
 		push y
-		call num6
+		call char_6
 		jmp draw_num_ret
-	draw_7:
+	draw_num7:
 		push x
 		push y
-		call num7
+		call char_7
 		jmp draw_num_ret
-	draw_8:
+	draw_num8:
 		push x
 		push y
-		call num8
+		call char_8
 		jmp draw_num_ret
-	draw_9:
+	draw_num9:
 		push x
 		push y
-		call num9
+		call char_9
 		jmp draw_num_ret
 	draw_num_ret:
 		ret
 
+draw_char:
+	je key_code 48 draw_0
+	je key_code 49 draw_1
+	je key_code 50 draw_2
+	je key_code 51 draw_3
+	je key_code 52 draw_4
+	je key_code 53 draw_5
+	je key_code 54 draw_6
+	je key_code 55 draw_7
+	je key_code 56 draw_8
+	je key_code 57 draw_9
+	je key_code 65 draw_A
+	je key_code 66 draw_B
+	je key_code 67 draw_C
+	je key_code 68 draw_D
+	je key_code 69 draw_E
+	je key_code 70 draw_F
+	je key_code 71 draw_G
+	je key_code 72 draw_H
+	je key_code 73 draw_I
+	je key_code 74 draw_J
+	je key_code 75 draw_K
+	je key_code 76 draw_L
+	je key_code 77 draw_M
+	je key_code 78 draw_N
+	je key_code 79 draw_O
+	je key_code 80 draw_P
+	je key_code 81 draw_Q
+	je key_code 82 draw_R
+	je key_code 83 draw_S
+	je key_code 84 draw_T
+	je key_code 85 draw_U
+	je key_code 86 draw_V
+	je key_code 87 draw_W
+	je key_code 88 draw_X
+	je key_code 89 draw_Y
+	je key_code 90 draw_Z
+	jmp draw_char_ret
+	draw_0:
+		push x
+		push y
+		call char_0
+		jmp draw_char_ret
+	draw_1:
+		push x
+		push y
+		call char_1
+		jmp draw_char_ret
+	draw_2:
+		push x
+		push y
+		call char_2
+		jmp draw_char_ret
+	draw_3:
+		push x
+		push y
+		call char_3
+		jmp draw_char_ret
+	draw_4:
+		push x
+		push y
+		call char_4
+		jmp draw_char_ret
+	draw_5:
+		push x
+		push y
+		call char_5
+		jmp draw_char_ret
+	draw_6:
+		push x
+		push y
+		call char_6
+		jmp draw_char_ret
+	draw_7:
+		push x
+		push y
+		call char_7
+		jmp draw_char_ret
+	draw_8:
+		push x
+		push y
+		call char_8
+		jmp draw_char_ret
+	draw_9:
+		push x
+		push y
+		call char_9
+		jmp draw_char_ret
+	draw_A:
+		push x
+		push y
+		call char_A
+		jmp draw_char_ret
+	draw_B:
+		push x
+		push y
+		call char_B
+		jmp draw_char_ret
+	draw_C:
+		push x
+		push y
+		call char_C
+		jmp draw_char_ret
+	draw_D:
+		push x
+		push y
+		call char_D
+		jmp draw_char_ret
+	draw_E:
+		push x
+		push y
+		call char_E
+		jmp draw_char_ret
+	draw_F:
+		push x
+		push y
+		call char_F
+		jmp draw_char_ret
+	draw_G:
+		push x
+		push y
+		call char_G
+		jmp draw_char_ret
+	draw_H:
+		push x
+		push y
+		call char_H
+		jmp draw_char_ret
+	draw_I:
+		push x
+		push y
+		call char_I
+		jmp draw_char_ret
+	draw_J:
+		push x
+		push y
+		call char_J
+		jmp draw_char_ret
+	draw_K:
+		push x
+		push y
+		call char_K
+		jmp draw_char_ret
+	draw_L:
+		push x
+		push y
+		call char_L
+		jmp draw_char_ret
+	draw_M:
+		push x
+		push y
+		call char_M
+		jmp draw_char_ret
+	draw_N:
+		push x
+		push y
+		call char_N
+		jmp draw_char_ret
+	draw_O:
+		push x
+		push y
+		call char_O
+		jmp draw_char_ret
+	draw_P:
+		push x
+		push y
+		call char_P
+		jmp draw_char_ret
+	draw_Q:
+		push x
+		push y
+		call char_Q
+		jmp draw_char_ret
+	draw_R:
+		push x
+		push y
+		call char_R
+		jmp draw_char_ret
+	draw_S:
+		push x
+		push y
+		call char_S
+		jmp draw_char_ret
+	draw_T:
+		push x
+		push y
+		call char_T
+		jmp draw_char_ret
+	draw_U:
+		push x
+		push y
+		call char_U
+		jmp draw_char_ret
+	draw_V:
+		push x
+		push y
+		call char_V
+		jmp draw_char_ret
+	draw_W:
+		push x
+		push y
+		call char_W
+		jmp draw_char_ret
+	draw_X:
+		push x
+		push y
+		call char_X
+		jmp draw_char_ret
+	draw_Y:
+		push x
+		push y
+		call char_Y
+		jmp draw_char_ret
+	draw_Z:
+		push x
+		push y
+		call char_Z
+		jmp draw_char_ret
+	draw_char_ret:
+		ret
+
 get_block_data:
-	pop block_type
+	pop t
 	
-	je block_type I get_I_data
-	je block_type O get_O_data
-	je block_type T get_T_data
-	je block_type S get_S_data
-	je block_type Z get_Z_data
-	je block_type J get_J_data
-	je block_type L get_L_data
+	je t I get_I_data
+	je t O get_O_data
+	je t T get_T_data
+	je t S get_S_data
+	je t Z get_Z_data
+	je t J get_J_data
+	je t L get_L_data
 
 	get_I_data:
 		je block_rotation 0 get_I0_data
@@ -857,15 +1570,15 @@ get_block_data:
 		ret
 
 set_block_color:
-	pop block_type
+	pop t
 	
-	je block_type I set_I_color
-	je block_type O set_O_color
-	je block_type T set_T_color
-	je block_type S set_S_color
-	je block_type Z set_Z_color
-	je block_type J set_J_color
-	je block_type L set_L_color
+	je t I set_I_color
+	je t O set_O_color
+	je t T set_T_color
+	je t S set_S_color
+	je t Z set_Z_color
+	je t J set_J_color
+	je t L set_L_color
 
 	set_I_color:
 		mov block_color I_color
@@ -927,151 +1640,9 @@ draw_block:
 		jl j 4 draw_block_loop
 	ret
 
-move_down:
-	mov block_x_new block_x
-	add block_y_new block_y 1
-	call check_collision
-	je collision 0 move_down_cont
-	mov end 1
-	clr i
-	mov t2 block_data
-	mul addr block_y board_width
-	add addr block_x
-	mov j block_y
-	and t t2 0b1111111100000000
-	jne t 0 max_row1
-	inc j
-	max_row1:
-	and t t2 0b1111000000000000
-	jne t 0 max_row2
-	inc j
-	max_row2:
-	jge j max_row store_block
-	mov max_row j
-	store_block:
-		and t t2 0b1000000000000000
-		shl t2 1
-		and t2 0b1111111111111111
-		je t2 0 move_down_ret
-		je t 0 skip_store_block
-		sw [addr] block_color
-		skip_store_block:
-		inc addr
-		inc i
-		jl i 4 store_block
-		add addr board_width
-		sub addr 4
-		clr i
-		jmp store_block
-	move_down_cont:
-		mov t block_size
-		mul x t block_x
-		mul y t block_y
-		sub x 2
-		add y 3
-		sc 0x000000
-		call draw_block
-		inc block_y
-		mov t block_size
-		mul x t block_x
-		mul y t block_y
-		sub x 2
-		add y 3
-		push block_cur
-		call set_block_color
-		sc block_color
-		call draw_block
-	move_down_ret:
-		ret
-
-check_collision:
-	clr i
-	clr collision
-	mov t2 block_data
-	mul addr block_y_new board_width
-	add addr block_x_new
-	dec addr
-	check_collision_loop:
-		inc addr
-		inc i
-		and t t2 0b1000000000000000
-		shl t2 1
-		and t2 0b1111111111111111
-		je t2 0 check_collision_ret
-		je t 0 skip_check
-		lw t [addr]
-		jne t 0 is_collision
-		skip_check:
-		jl i 4 check_collision_loop
-		add addr board_width
-		sub addr 4
-		clr i
-		jmp check_collision_loop
-	is_collision:
-		mov collision 1
-	check_collision_ret:
-		ret
-
-check_line_full:
-	mov i max_row
-	mov j 2
-	mul addr max_row board_width
-	check_line_full_loop:
-		inc addr
-		lw t [addr]
-		je t 0 check_next_line
-		inc j
-		jge j board_width clear_line
-		jmp check_line_full_loop
-		check_next_line:
-			inc i
-			clr j
-			mul addr i board_width
-			jl i board_height check_line_full_loop
-			jmp check_line_full_ret
-	clear_line:
-		dec i
-		mul addr i board_width
-		call draw_line
-		jge i max_row clear_line
-		sc 0x000000
-		call draw_score
-		inc score
-	check_line_full_ret:
-		ret
-
-draw_line:
-	mov x 3
-	mov t block_size
-	add t2 i 1
-	mul y t t2
-	add y 3
-	mov j 2
-	draw_line_loop:
-		inc addr
-		lw block_color [addr]
-		sc block_color
-		mov x0 x
-		mov y0 y
-		clr i0
-		clr j0
-		draw_line_loop0:
-			draw x0 y0
-			inc x0
-			inc i0
-			jl i0 block_size draw_line_loop0
-			sub x0 block_size
-			inc y0
-			clr i0
-			inc j0
-			jl j0 block_size draw_line_loop0
-		add x block_size
-		inc j
-		jl j board_width draw_line_loop
-	ret
 
 
-num0:
+char_0:
 	pop character_y
 	pop character_x
 	inc character_x
@@ -1120,7 +1691,7 @@ num0:
 	draw character_x character_y
 	ret
 
-num1:
+char_1:
 	pop character_y
 	pop character_x
 	add character_x 2
@@ -1147,7 +1718,7 @@ num1:
 	draw character_x character_y
 	ret
 	
-num2:
+char_2:
 	pop character_y
 	pop character_x
 	inc character_y
@@ -1186,7 +1757,7 @@ num2:
 	draw character_x character_y
 	ret
 	
-num3:
+char_3:
 	pop character_y
 	pop character_x
 	inc character_y
@@ -1225,7 +1796,7 @@ num3:
 	draw character_x character_y
 	ret
 	
-num4:
+char_4:
 	pop character_y
 	pop character_x
 	add character_x 3
@@ -1264,7 +1835,7 @@ num4:
 	draw character_x character_y
 	ret
 	
-num5:
+char_5:
 	pop character_y
 	pop character_x
 	add character_x 4
@@ -1306,7 +1877,7 @@ num5:
 	draw character_x character_y
 	ret
 	
-num6:
+char_6:
 	pop character_y
 	pop character_x
 	add character_x 4
@@ -1351,7 +1922,7 @@ num6:
 	draw character_x character_y
 	ret
 	
-num7:
+char_7:
 	pop character_y
 	pop character_x
 	draw character_x character_y
@@ -1379,7 +1950,7 @@ num7:
 	draw character_x character_y
 	ret
 
-num8:
+char_8:
 	pop character_y
 	pop character_x
 	inc character_x
@@ -1423,7 +1994,7 @@ num8:
 	draw character_x character_y
 	ret
 	
-num9:
+char_9:
 	pop character_y
 	pop character_x
 	add character_x 3
@@ -1513,7 +2084,7 @@ char_A:
 char_B:
 	pop character_y
 	pop character_x
-	add character_x 6
+	add character_y 6
 	draw character_x character_y
 	dec character_y
 	draw character_x character_y
@@ -1679,6 +2250,40 @@ char_E:
 	draw character_x character_y
 	ret
 	
+char_F:
+	pop character_y
+	pop character_x
+	add character_x 4
+	draw character_x character_y
+	dec character_x
+	draw character_x character_y
+	dec character_x
+	draw character_x character_y
+	dec character_x
+	draw character_x character_y
+	dec character_x
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	sub character_y 3
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	ret
+	
 char_G:
 	pop character_y
 	pop character_x
@@ -1788,6 +2393,77 @@ char_I:
 	inc character_x
 	draw character_x character_y
 	inc character_x
+	draw character_x character_y
+	ret
+	
+char_J:
+	pop character_y
+	pop character_x
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	draw character_x character_y
+	dec character_x
+	dec character_y
+	draw character_x character_y
+	ret
+	
+char_K:
+	pop character_y
+	pop character_x
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	add character_x 4
+	sub character_y 6
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	inc character_y
 	draw character_x character_y
 	ret
 	
@@ -1982,6 +2658,49 @@ char_P:
 	draw character_x character_y
 	ret
 	
+char_Q:
+	pop character_y
+	pop character_x
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	add character_y 2
+	draw character_x character_y
+	sub character_x 2
+	draw character_x character_y
+	dec character_x
+	draw character_x character_y
+	dec character_x
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	add character_x 2
+	add character_y 3
+	draw character_x character_y
+	inc character_x
+	inc character_y
+	draw character_x character_y
+	ret
+	
 char_R:
 	pop character_y
 	pop character_x
@@ -2097,6 +2816,42 @@ char_T:
 	draw character_x character_y
 	ret
 	
+char_U:
+	pop character_y
+	pop character_x
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	ret
+	
 char_V:
 	pop character_y
 	pop character_x
@@ -2119,6 +2874,46 @@ char_V:
 	dec character_y
 	draw character_x character_y
 	inc character_x
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	ret
+	
+char_W:
+	pop character_y
+	pop character_x
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	dec character_y
+	draw character_x character_y
+	dec character_y
+	draw character_x character_y
+	inc character_x
+	add character_y 2
+	draw character_x character_y
+	inc character_x
+	dec character_y
+	draw character_x character_y
 	dec character_y
 	draw character_x character_y
 	dec character_y
@@ -2197,7 +2992,62 @@ char_Y:
 	draw character_x character_y
 	ret
 	
-colon:
+char_Z:
+	pop character_y
+	pop character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	dec character_x
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	inc character_x
+	draw character_x character_y
+	ret
+
+char_exclamation_mark:
+	pop character_y
+	pop character_x
+	add character_x 2
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	inc character_y
+	draw character_x character_y
+	add character_y 2
+	draw character_x character_y
+	ret
+
+char_colon:
 	pop character_y
 	pop character_x
 	inc character_x
